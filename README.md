@@ -1,4 +1,4 @@
-***This project is currently a work in progress***
+***This project is currently a work in progress, coordinated by [Conf. univ. dr. Popescu-Bodorin Nicolaie](https://www.linkedin.com/in/bodorin/).***
 
 # Python Perceptron Project
 

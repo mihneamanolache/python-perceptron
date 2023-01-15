@@ -1,20 +1,16 @@
 from matplotlib import font_manager
-from PIL import Image, ImageFont, ImageDraw
+from PIL import Image, ImageFont, ImageDraw, ImageChops
 from fontTools.ttLib import TTFont
 import io, string, os, math
 import numpy as np
+from fontTools import ttLib
+
 
 ''' ------------------------------------------------ PERCEPTRON ------------------------------------------------ '''
 
-
-class Perceptron:
-
+class Generator:
     def __init__(self) -> None:
-        self.w_sum: int = 0
-        self.weigths: list = []
-        self.bias: float = 0.1
-
-    ''' ----- Training data generation section  ----- '''
+        self.name: string = 'Generator'
 
     # Check if glyph is available for given font and character
     def has_glyph(self, font: string, glyph: string) -> bool:
@@ -28,9 +24,13 @@ class Perceptron:
     def generate_image(self, w_h: int, font: str, letter: str, path: str, i: int) -> None:
         image = Image.new("1", (w_h, w_h), "white")
         draw = ImageDraw.Draw(image)
-        font = ImageFont.truetype(font, int(w_h/1.75))
-        _, _, w, h = draw.textbbox((0, 0), letter, font=font)
-        draw.text(((w_h-w)/2, (w_h-h)/2), letter, font=font)
+        font_size = int(w_h/1.75)
+        f = ImageFont.truetype(font, font_size)
+        # while f.getsize(letter)[0] < image.size[0]:
+        #     font_size += 1
+        #     f = ImageFont.truetype(font, font_size)
+        _, _, w, h = draw.textbbox((0, 0), letter, font=f)
+        draw.text(((w_h-w)/2, (w_h-h)/2), letter, font=f)
         image.save(f'{path}/{i}.jpeg')
 
     # Generate list of alphabetical characters
@@ -55,10 +55,14 @@ class Perceptron:
                         self.generate_image(200, font, letter, _path, i)
                         i+=1
 
-    ''' ----- General methods for reading images and returning bytes arrays ----- '''
 
-    # Read image from patch and convert it to BW
+class Processor:
+    def __init__(self) -> None:
+        self.name: string = 'Pre-processor'
+
+    # Read image from path and convert it to BW
     def read_image(self, path: str) -> Image:
+        print('[i] Reading image.')
         image: Image = Image.open(path)
         image = image.convert('1')
         image.save(path)
@@ -66,6 +70,7 @@ class Perceptron:
 
     # Get all image bytes
     def image_to_byte_array(self, image: Image) -> bytes:
+        print('[i] Reading image bytes.')
         byteIO: bytes = io.BytesIO()
         image.save(byteIO, format='JPEG')
         return byteIO.getvalue()
@@ -76,54 +81,67 @@ class Perceptron:
 
     # Generate list of arrays for each line of the image
     def get_pixels_array(self, img: Image, width: int, height:int) -> list:
+        print('[i] Gennerating array of bytes.')
         arr: list = []
         for i in range(width):
             b = [self.get_pixel(img, i, j) for j in range(height)]
             arr.append(b)
         return arr
     
-    ''' ----- Perceptor Algorythm Implementation ----- '''
+    def get_simplified_array(self, array: list) -> list:
+        print('[i] Generating input vector.')
+        return [line.count(0)/len(line)*100 for line in array if math.prod(line) == 0]
 
+
+class Perceptron:
+    def __init__(self, letter) -> None:
+        self.letter: string = letter
+        self.w_sum: int = 0
+        self.weigths: list = []
+        self.bias: float = 0.1
+    
     def step(self, w_sum: float) -> int:
-        return np.where(w_sum >= 0.0, 1, 0)
+        return np.where(w_sum >= 0.0, 1, 0) 
 
-    def training() -> None:
-        '''
-        NOTES:
-            - Should itterate over value_input, weigth in zip(trainig_set, self.weights)
-                - Add value_input * weigth to self.w_sum
-            - retrun self.step(self.w_sum)
-
-        EXAMPLE:
-            for x, w in zip(trainig_set, self.weights):
+    def train(self, training_set: list) -> None:
+        print(f'[i] Training perceptron for letter {self.letter}')
+        for x, w in zip(training_set, self.weights):
                 self.w_sum += x*w + self.bias
-            return self.step(self.w_sum)
-        '''
+                print(self.step(self.w_sum))
+           
+    def predict(self, vector: list) ->  None:
         return
 
 
 ''' ------------------------------------------------ EXECUTION ------------------------------------------------ '''
 
-
 ''' 
-STEP 1: Create a new perceptron 
-    USAGE: <VARIABLE> = Perceptron()
-        - i.e. perceptron = Perceptron()
-    NOTES: 
-        - Design wise, I think I will generate a new Perceptron object for each letter
-        and train it accordingly, such that it will return 1 or 0 if the user input 
-        belongs or not to the trained object (letter).
-'''
-perceptron = Perceptron()
-
-
-
-''' 
-STEP 2 (OPTIONAL): Generate a new set of images for training 
-    USAGE: <VARIABLE>.generate_training_list(<PATH_TO_FOLDER>)
+STEP 0 (OPTIONAL): Generate a new set of images for training 
+    USAGE: Generator().generate_training_list(<PATH_TO_FOLDER>)
         - i.e. perceptron.generate_training_list('./letters')
 '''
-# perceptron.generate_training_list('./letters')
+# Generator().generate_training_list('./letters')
+
+
+'''
+For testing purposes, I will only focus on letter A for now
+
+STEP 1: Generate training set (inputs)
+    - For each letter in directory:
+        1. Generate array of all pixels
+        2. Simplify the array to get B/W proportion 
+'''
+# TRAINING_SET_A = [Processor().get_simplified_array(Processor().get_pixels_array(Processor().read_image(path=f'./letters/_A/{i}'), 200, 200)) for i in os.listdir('./letters/_A')] 
+
+print(len(Processor().get_simplified_array(Processor().get_pixels_array(Processor().read_image(path=f'./letters/_A/2.jpeg'), 200, 200))))
+''' 
+STEP 2: Initialize perceptron 
+'''
+# PERCEPTRON_A = Perceptron(letter='A')
+# PERCEPTRON_A.train(TRAINING_SET_A)
+
+
+# print(np.zeros(math.prod((200,200))))
 
 '''
 STEP 3: Model training
