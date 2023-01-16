@@ -1,7 +1,7 @@
 ***This project is currently a work in progress. It is coordinated by [Conf. univ. dr. Popescu-Bodorin Nicolaie](https://www.linkedin.com/in/bodorin/) and maintained by:***
 
-[***Mihnea Manolache***](https://github.com/mihneamanolache)
-[***Ungureanu Daniel-Robert***](https://github.com/groador)
+- [***Mihnea Manolache***](https://github.com/mihneamanolache)
+- [***Ungureanu Daniel-Robert***](https://github.com/groador)
 
 # Python Perceptron Project
 
