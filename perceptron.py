@@ -133,7 +133,7 @@ STEP 1: Generate training set (inputs)
 '''
 # TRAINING_SET_A = [Processor().get_simplified_array(Processor().get_pixels_array(Processor().read_image(path=f'./letters/_A/{i}'), 200, 200)) for i in os.listdir('./letters/_A')] 
 
-print(len(Processor().get_simplified_array(Processor().get_pixels_array(Processor().read_image(path=f'./letters/_A/2.jpeg'), 200, 200))))
+# print(len(Processor().get_simplified_array(Processor().get_pixels_array(Processor().read_image(path=f'./letters/_A/.jpeg'), 200, 200))))
 ''' 
 STEP 2: Initialize perceptron 
 '''
