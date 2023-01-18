@@ -100,85 +100,54 @@ class Perceptron:
         self.weigths: list = []
         self.bias: float = 0.1
     
-    def step(self, w_sum: float) -> int:
+    def activation(self, w_sum: float) -> int:
         return np.where(w_sum >= 0.0, 1, 0) 
 
     def train(self, training_set: list) -> None:
         print(f'[i] Training perceptron for letter {self.letter}')
-        for x, w in zip(training_set, self.weights):
-                self.w_sum += x*w + self.bias
-                print(self.step(self.w_sum))
+        for training_sequence in training_set:
+            for x, w in zip(training_sequence, self.weights):
+                    self.w_sum += x * w + self.bias
+                    if self.activation(self.w_sum) < 1:
+                        self.weigths = [self.weigths[i] * training_sequence[i] + self.bias for i in range(0, len(self.weigths))]
            
     def predict(self, vector: list) ->  None:
-        return
+        for x, w in zip(vector, self.weights):
+            self.w_sum += x * w + self.bias
+        return self.activation(self.w_sum)
 
 
 ''' ------------------------------------------------ EXECUTION ------------------------------------------------ '''
 
 ''' 
-STEP 0 (OPTIONAL): Generate a new set of images for training 
+(OPTIONAL): Generate a new set of images for training 
     USAGE: Generator().generate_training_list(<PATH_TO_FOLDER>)
-        - i.e. perceptron.generate_training_list('./letters')
 '''
 # Generator().generate_training_list('./letters')
 
 
 '''
-For testing purposes, I will only focus on letter A for now
-
 STEP 1: Generate training set (inputs)
-    - For each letter in directory:
-        1. Generate array of all pixels
-        2. Simplify the array to get B/W proportion 
+    USAGE: TRAINING_SET_A = [Processor().get_simplified_array(Processor().get_pixels_array(Processor().read_image(path=f'<PATH_TO_LETTER>/{i}'), <PIXELS_W>, <PIXELS_H>)) for i in os.listdir('<PATH_TO_FOLDER>')] 
 '''
 # TRAINING_SET_A = [Processor().get_simplified_array(Processor().get_pixels_array(Processor().read_image(path=f'./letters/_A/{i}'), 200, 200)) for i in os.listdir('./letters/_A')] 
-
 # print(len(Processor().get_simplified_array(Processor().get_pixels_array(Processor().read_image(path=f'./letters/_A/.jpeg'), 200, 200))))
+
+
 ''' 
 STEP 2: Initialize perceptron 
+    USAGE: PERCEPTRON_<LETTER> = Perceptron(letter=<LETTER>)
 '''
 # PERCEPTRON_A = Perceptron(letter='A')
-# PERCEPTRON_A.train(TRAINING_SET_A)
-
-
-# print(np.zeros(math.prod((200,200))))
 
 '''
 STEP 3: Model training
-    NOTES: 
-        - The system should loop through every image of one character in the traning set
-        - It should get the pixels array (`get_pixels_array`) which is composed of arrays 
-        pixels bytes, for each line of the image
-        - If the multiplied elements of the arrays inside the pixels array is 0, it means 
-        it holds a black pixel (0 in RGB is black, 255 is white) and we'll use only these lines
-        - We'll count the black pixels inside the array and divide by image width to get 
-        black pixels ratio for each line
-
-    EXAMPLE:
-        image = perceptron.read_image('A.jpeg')
-        print([line.count(0)/len(line)*100 for line in perceptron.get_pixels_array(image, image.width, image.height) if math.prod(line) == 0])
-
-        UNCOMPREHENDED (FOR READABILITY):
-            for letter in os.listdir('./letters/a'):
-                arr = []
-                image = perceptron.read_image(letter)
-                for line in perceptron.get_pixels_array(image, image.width, image.height):
-                    if math.prod(line) == 0:
-                        arr.push(line.count(0)/len(line)*100)
-                print(arr)
-
-        - Weights can be generated using `np.zeros(math.prod(image.size))`
-        - Should adjust the weigths based on that output. Will ask professor !!!
+    USAGE: PERCEPTRON_<LETTER>.train(<TRAINING_SET>)
 '''
+# PERCEPTRON_A.train(TRAINING_SET_A)
 
 
 '''
-STEP 4: Prediction based on user input
-    NOTES: 
-        - I will probably encapsulate everything in a `while True` loop to run the
-        program continously
-        - I will probably require user input, which will be of type string and its
-        value will be the path to an image containing a letter
-        - I will get the image's bytes ratio array and feed it to the trained models
-        like in the example from STEP 3.
+STEP 4: Prediction
+    USAGE: PERCEPTRON_<LETTER>.predict(Processor().get_simplified_array(Processor().get_pixels_array(Processor().read_image(path=f'<PATH_TO_LETTER>'), <PIXELS_W>, <PIXELS_H>)))
 '''
