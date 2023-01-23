@@ -159,4 +159,8 @@ PERCEPTRON_A.train(TRAINING_SET_A)
 STEP 4: Prediction
     USAGE: PERCEPTRON_<LETTER>.predict(Processor().get_simplified_array(Processor().get_pixels_array(Processor().read_image(path=f'<PATH_TO_LETTER>'), <PIXELS_W>, <PIXELS_H>)))
 '''
-print(PERCEPTRON_A.predict(Processor().get_simplified_array(Processor().get_pixels_array(Processor().read_image(path=f'A.jpeg'), 200, 200))))
+A = PERCEPTRON_A.predict(Processor().get_simplified_array(Processor().get_pixels_array(Processor().read_image(path=f'A.jpeg'), 200, 200)))
+B = PERCEPTRON_A.predict(Processor().get_simplified_array(Processor().get_pixels_array(Processor().read_image(path=f'B.jpeg'), 200, 200)))
+
+print(f'\n[+] Result for leter `A`: {"POSITIVE" if A else "NEGATIVE"}')
+print(f'\n[+] Result for leter `B`: {"POSITIVE" if B else "NEGATIVE"}')
