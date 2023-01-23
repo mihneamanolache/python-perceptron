@@ -4,6 +4,7 @@ from fontTools.ttLib import TTFont
 import io, string, os, math
 import numpy as np
 from fontTools import ttLib
+import cv2
 
 
 ''' ------------------------------------------------ PERCEPTRON ------------------------------------------------ '''
@@ -18,7 +19,7 @@ class Generator:
             if table.isUnicode() or table.getEncoding() == 'utf_16_be':
                 if ord(glyph) in table.cmap.keys():
                     return True
-        return False
+        return False 
 
     # Draw new BW image with character in the middle
     def generate_image(self, w_h: int, font: str, letter: str, path: str, i: int) -> None:
@@ -26,9 +27,6 @@ class Generator:
         draw = ImageDraw.Draw(image)
         font_size = int(w_h/1.75)
         f = ImageFont.truetype(font, font_size)
-        # while f.getsize(letter)[0] < image.size[0]:
-        #     font_size += 1
-        #     f = ImageFont.truetype(font, font_size)
         _, _, w, h = draw.textbbox((0, 0), letter, font=f)
         draw.text(((w_h-w)/2, (w_h-h)/2), letter, font=f)
         image.save(f'{path}/{i}.jpeg')
@@ -60,13 +58,23 @@ class Processor:
     def __init__(self) -> None:
         self.name: string = 'Pre-processor'
 
+    # Crop whitespace from image
+    def crop_white(self, image: str, pixel: int = 255) -> None:
+        gray = cv2.imread(image, cv2.IMREAD_GRAYSCALE)
+        crop_rows = gray[~np.all(gray == pixel, axis=1), :]
+        cropped_image = crop_rows[:, ~np.all(crop_rows == pixel, axis=0)]
+        cv2.imwrite(image, cropped_image)   
+
     # Read image from path and convert it to BW
     def read_image(self, path: str) -> Image:
         print('[i] Reading image.')
+        self.crop_white(path)
         image: Image = Image.open(path)
         image = image.convert('1')
-        image.save(path)
-        return image
+        ratio = 200/image.size[1]
+        resized = image.resize((int(ratio*image.size[0]),200))
+        resized.save(path)
+        return resized
 
     # Get all image bytes
     def image_to_byte_array(self, image: Image) -> bytes:
@@ -94,10 +102,10 @@ class Processor:
 
 
 class Perceptron:
-    def __init__(self, letter) -> None:
-        self.letter: string = letter
+    def __init__(self, letter: str) -> None:
+        self.letter: str = letter
         self.w_sum: int = 0
-        self.weigths: list = []
+        self.weights: list = []
         self.bias: float = 0.1
     
     def activation(self, w_sum: float) -> int:
@@ -109,7 +117,7 @@ class Perceptron:
             for x, w in zip(training_sequence, self.weights):
                     self.w_sum += x * w + self.bias
                     if self.activation(self.w_sum) < 1:
-                        self.weigths = [self.weigths[i] * training_sequence[i] + self.bias for i in range(0, len(self.weigths))]
+                        self.weights = [self.weights[i] * training_sequence[i] + self.bias for i in range(0, len(self.weights))]
            
     def predict(self, vector: list) ->  None:
         for x, w in zip(vector, self.weights):
@@ -131,7 +139,7 @@ STEP 1: Generate training set (inputs)
     USAGE: TRAINING_SET_A = [Processor().get_simplified_array(Processor().get_pixels_array(Processor().read_image(path=f'<PATH_TO_LETTER>/{i}'), <PIXELS_W>, <PIXELS_H>)) for i in os.listdir('<PATH_TO_FOLDER>')] 
 '''
 # TRAINING_SET_A = [Processor().get_simplified_array(Processor().get_pixels_array(Processor().read_image(path=f'./letters/_A/{i}'), 200, 200)) for i in os.listdir('./letters/_A')] 
-# print(len(Processor().get_simplified_array(Processor().get_pixels_array(Processor().read_image(path=f'./letters/_A/.jpeg'), 200, 200))))
+# print(len(Processor().get_simplified_array(Processor().get_pixels_array(Processor().read_image(path=f'./letters/_A/2.jpeg'), 200, 200))))
 
 
 ''' 
