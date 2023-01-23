@@ -138,7 +138,7 @@ class Perceptron:
 STEP 1: Generate training set (inputs)
     USAGE: TRAINING_SET_A = [Processor().get_simplified_array(Processor().get_pixels_array(Processor().read_image(path=f'<PATH_TO_LETTER>/{i}'), <PIXELS_W>, <PIXELS_H>)) for i in os.listdir('<PATH_TO_FOLDER>')] 
 '''
-# TRAINING_SET_A = [Processor().get_simplified_array(Processor().get_pixels_array(Processor().read_image(path=f'./letters/_A/{i}'), 200, 200)) for i in os.listdir('./letters/_A')] 
+TRAINING_SET_A = [Processor().get_simplified_array(Processor().get_pixels_array(Processor().read_image(path=f'./letters/_A/{i}'), 200, 200)) for i in os.listdir('./letters/_A')] 
 # print(len(Processor().get_simplified_array(Processor().get_pixels_array(Processor().read_image(path=f'./letters/_A/2.jpeg'), 200, 200))))
 
 
@@ -146,16 +146,17 @@ STEP 1: Generate training set (inputs)
 STEP 2: Initialize perceptron 
     USAGE: PERCEPTRON_<LETTER> = Perceptron(letter=<LETTER>)
 '''
-# PERCEPTRON_A = Perceptron(letter='A')
+PERCEPTRON_A = Perceptron(letter='A')
 
 '''
 STEP 3: Model training
     USAGE: PERCEPTRON_<LETTER>.train(<TRAINING_SET>)
 '''
-# PERCEPTRON_A.train(TRAINING_SET_A)
+PERCEPTRON_A.train(TRAINING_SET_A)
 
 
 '''
 STEP 4: Prediction
     USAGE: PERCEPTRON_<LETTER>.predict(Processor().get_simplified_array(Processor().get_pixels_array(Processor().read_image(path=f'<PATH_TO_LETTER>'), <PIXELS_W>, <PIXELS_H>)))
 '''
+print(PERCEPTRON_A.predict(Processor().get_simplified_array(Processor().get_pixels_array(Processor().read_image(path=f'A.jpeg'), 200, 200))))
